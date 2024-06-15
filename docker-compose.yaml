@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password  # Remplacez par un mot de passe sécurisé
+      MYSQL_DATABASE: app_db             # Nom de la base de données
+      MYSQL_USER: user               # Utilisateur MySQL
+      MYSQL_PASSWORD: app_password       # Mot de passe de l'utilisateur MySQL
+    ports:
+      - "3307:3307"
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
