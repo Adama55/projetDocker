@@ -1,8 +1,17 @@
-version: '3.8'
+version: '1.24'
 
 services:
+  db:
+    image: mysql:8.0
+    env_file:
+      - .env
+    ports:
+      - "3307:3307"
+    volumes:
+      - db_data:/var/lib/mysql
+
   app:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
     ports:
@@ -11,18 +20,16 @@ services:
       - .:/app
     depends_on:
       - db
-
-  db:
-    image: mysql:8.0
+    env_file:
+      - .env
     environment:
-      MYSQL_ROOT_PASSWORD: root_password  # Remplacez par un mot de passe sécurisé
-      MYSQL_DATABASE: app_db             # Nom de la base de données
-      MYSQL_USER: user               # Utilisateur MySQL
-      MYSQL_PASSWORD: app_password       # Mot de passe de l'utilisateur MySQL
+      DATABASE_URL: mysql+pymysql://$MYSQL_USER:$MYSQL_PASSWORD@db/$MYSQL_DATABASE
+
+  adminer:
+    image: adminer
+    restart: always
     ports:
-      - "3307:3307"
-    volumes:
-      - db_data:/var/lib/mysql
+      - "8080:8080"
 
 volumes:
   db_data:
